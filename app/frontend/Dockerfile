@@ -13,7 +13,7 @@ FROM nginxinc/nginx-unprivileged:stable-alpine AS runtime
 
 # Upgrade Alpine runtime libraries to patched repository versions.
 # Keep Trivy HIGH/CRITICAL as the final release gate.
-USER root
+USER 0
 RUN apk upgrade --no-cache
 
 COPY --from=build /src/dist/ /usr/share/nginx/html/
