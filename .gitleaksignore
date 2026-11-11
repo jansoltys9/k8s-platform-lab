@@ -1,0 +1,5 @@
+# Verified historical SealedSecret ciphertext only.
+# Do not add broad path or rule exclusions.
+a2ae872f8e42cb2dcdadb8a199a676b8fc270e7e:gitops/secrets/platformlab-backend-auth-gitops.yaml:generic-api-key:9
+fc2d3fd8f5c135a53edbd7653e05b0fd6b41d6d9:gitops/secrets/aspecta-backend-auth-gitops.yaml:generic-api-key:9
+c4073adcd5d3a89d462bf56a8f2d5abe2bf5436d:gitops/secrets/aspecta-backend-auth-gitops.yaml:generic-api-key:9
