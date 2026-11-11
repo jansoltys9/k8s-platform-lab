@@ -1,5 +1,5 @@
 # Minimal Node.js runtime without npm, apk or a shell.
-FROM gcr.io/distroless/nodejs22-debian13:nonroot
+FROM gcr.io/distroless/nodejs26-debian13:nonroot
 
 LABEL org.opencontainers.image.title="PlatformLab Backend"
 
