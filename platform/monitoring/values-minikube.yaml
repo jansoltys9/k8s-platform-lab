@@ -35,7 +35,7 @@ prometheus:
     storageSpec:
       volumeClaimTemplate:
         spec:
-          storageClassName: aspecta-csi-wffc
+          storageClassName: platformlab-csi-wffc
           accessModes:
             - ReadWriteOnce
           resources:
@@ -57,7 +57,7 @@ alertmanager:
     storage:
       volumeClaimTemplate:
         spec:
-          storageClassName: aspecta-csi-wffc
+          storageClassName: platformlab-csi-wffc
           accessModes:
             - ReadWriteOnce
           resources:

@@ -2,12 +2,12 @@ apiVersion: v1
 kind: Pod
 metadata:
   name: worker-network-test
-  namespace: aspecta-app
+  namespace: platformlab-app
 spec:
   restartPolicy: Never
   automountServiceAccountToken: false
   nodeSelector:
-    kubernetes.io/hostname: aspecta-m02
+    kubernetes.io/hostname: platformlab-m02
   containers:
     - name: network-test
       image: busybox:1.36
@@ -16,10 +16,10 @@ spec:
         - |
           set -e
           echo "Testing Kubernetes DNS..."
-          nslookup aspecta-backend.aspecta-app.svc.cluster.local
+          nslookup platformlab-backend.platformlab-app.svc.cluster.local
 
           echo "Testing cross-node HTTP..."
-          wget -T 10 -qO- http://aspecta-backend.aspecta-app.svc.cluster.local:3000/healthz
+          wget -T 10 -qO- http://platformlab-backend.platformlab-app.svc.cluster.local:3000/healthz
           echo
       resources:
         requests:

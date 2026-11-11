@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Promote only one approved Aspecta SemVer image in the Helm values file.
+"""Promote only one approved PlatformLab SemVer image in the Helm values file.
 
 No external Python modules required; fail if expected keys are absent.
 """
@@ -32,7 +32,7 @@ def promote(text: str, owner: str, component: str, tag: str) -> str:
             match = re.match(r"^(    )(repository|tag):[^\n\r]*(\r?\n)?$", line)
             if match:
                 field = match.group(2)
-                value = f"ghcr.io/{owner}/aspecta-{component}" if field == "repository" else tag
+                value = f"ghcr.io/{owner}/platformlab-{component}" if field == "repository" else tag
                 line = f"    {field}: {value}{match.group(3) or ''}"
                 if field in seen:
                     raise ValueError(f"Duplicate {component}.image.{field}")
@@ -49,7 +49,7 @@ def main() -> None:
     parser.add_argument("--owner", required=True)
     parser.add_argument("--component", choices=("backend", "frontend"), required=True)
     parser.add_argument("--tag", required=True)
-    parser.add_argument("--file", default="helm/aspecta/values.yaml")
+    parser.add_argument("--file", default="helm/platformlab/values.yaml")
     parser.add_argument("--dry-run", action="store_true")
     args = parser.parse_args()
     path = Path(args.file)

@@ -1,11 +1,11 @@
 config:
   appEnv: dev
-  appMessage: "Hello from Aspecta Kubernetes!"
+  appMessage: "Hello from Kubernetes Platform!"
 
 # NodeSelector limits the app to workers, soft preferences allow failover.
 scheduling:
   nodeSelector:
-    aspecta.io/pool: workers
+    platformlab.io/pool: workers
   preferredNodeTier: apps
 
 backend:
@@ -16,7 +16,7 @@ backend:
     maxReplicas: 2
     targetCPUUtilizationPercentage: 70
   image:
-    repository: ghcr.io/jansoltys9/aspecta-backend
+    repository: ghcr.io/jansoltys9/platformlab-backend
     tag: v0.1.0
     pullPolicy: IfNotPresent
   resources:
@@ -27,7 +27,7 @@ backend:
       cpu: 250m
       memory: 256Mi
   auth:
-    existingSecretName: aspecta-backend-auth-gitops
+    existingSecretName: platformlab-backend-auth-gitops
 
 frontend:
   replicaCount: 1
@@ -37,7 +37,7 @@ frontend:
     maxReplicas: 2
     targetCPUUtilizationPercentage: 70
   image:
-    repository: ghcr.io/jansoltys9/aspecta-frontend
+    repository: ghcr.io/jansoltys9/platformlab-frontend
     tag: v0.1.0
     pullPolicy: IfNotPresent
   resources:

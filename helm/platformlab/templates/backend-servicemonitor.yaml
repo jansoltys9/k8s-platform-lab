@@ -4,7 +4,7 @@ kind: ServiceMonitor
 metadata:
   name: {{ .Release.Name }}-backend
   labels:
-    release: aspecta-monitoring
+    release: platformlab-monitoring
 spec:
   namespaceSelector:
     matchNames:

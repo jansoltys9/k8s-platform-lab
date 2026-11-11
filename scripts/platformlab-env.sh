@@ -1,20 +1,20 @@
 #!/usr/bin/env bash
-# Aspecta local platform lifecycle helper (Windows Git Bash, Linux and macOS).
+# PlatformLab local platform lifecycle helper (Windows Git Bash, Linux and macOS).
 # Commands: check, verify, start, bootstrap, storage, doctor, flow, uis, stop.
 # Startup gates verify dependencies; existing Pods still restart in parallel.
 # Never deletes PVCs, forcibly changes HPA replicas, or syncs Argo CD.
 set -Eeuo pipefail
 
-PROFILE="${ASPECTA_PROFILE:-aspecta}"
-CONTEXT="${ASPECTA_CONTEXT:-aspecta}"
+PROFILE="${PLATFORMLAB_PROFILE:-platformlab}"
+CONTEXT="${PLATFORMLAB_CONTEXT:-platformlab}"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
-UI_HELPER="$SCRIPT_DIR/aspecta-uis.sh"
-STORAGE_HELPER="$SCRIPT_DIR/aspecta-storage.sh"
+UI_HELPER="$SCRIPT_DIR/platformlab-uis.sh"
+STORAGE_HELPER="$SCRIPT_DIR/platformlab-storage.sh"
 NODE_BOOTSTRAP="$REPO_ROOT/platform/bootstrap/label-workers.sh"
-OPS_DIR="${ASPECTA_OPS_DIR:-$HOME/.aspecta-ops}"
-ROLLOUT_TIMEOUT="${ASPECTA_ROLLOUT_TIMEOUT:-240}"
-ARGO_TIMEOUT="${ASPECTA_ARGO_TIMEOUT:-180}"
+OPS_DIR="${PLATFORMLAB_OPS_DIR:-$HOME/.platformlab-ops}"
+ROLLOUT_TIMEOUT="${PLATFORMLAB_ROLLOUT_TIMEOUT:-240}"
+ARGO_TIMEOUT="${PLATFORMLAB_ARGO_TIMEOUT:-180}"
 # Fail early for invalid operator-provided timeout overrides.
 for timeout in "$ROLLOUT_TIMEOUT" "$ARGO_TIMEOUT"; do
   [[ "$timeout" =~ ^[1-9][0-9]*$ ]] || {
@@ -46,18 +46,18 @@ kw()      { kubectl --context "$CONTEXT" "$@"; }
 
 usage() {
   cat <<'USAGE'
-Aspecta - local Kubernetes platform (Windows Git Bash / Linux / macOS)
+PlatformLab - local Kubernetes platform (Windows Git Bash / Linux / macOS)
 
-  bash scripts/aspecta-env.sh check       Read-only health, statistics and next steps
-  bash scripts/aspecta-env.sh start       Start EXISTING 3-node cluster, align CSI storage and verify
-  bash scripts/aspecta-env.sh verify      Read-only readiness checks; do not change addons
-  bash scripts/aspecta-env.sh bootstrap   Start, restore worker labels, verify and report GitOps
-  bash scripts/aspecta-env.sh storage status    Check CSI addon and storage ownership
-  bash scripts/aspecta-env.sh storage reconcile Align CSI addon during maintenance
-  bash scripts/aspecta-env.sh doctor      Extended read-only diagnostics (events, allocations)
-  bash scripts/aspecta-env.sh flow        Show ordered daily bootstrap and shutdown flow
-  bash scripts/aspecta-env.sh uis start   Delegate to aspecta-uis.sh start|open|status|stop|logs
-  bash scripts/aspecta-env.sh stop        Snapshot state, stop UI forwards and Minikube (no delete)
+  bash scripts/platformlab-env.sh check       Read-only health, statistics and next steps
+  bash scripts/platformlab-env.sh start       Start EXISTING 3-node cluster, align CSI storage and verify
+  bash scripts/platformlab-env.sh verify      Read-only readiness checks; do not change addons
+  bash scripts/platformlab-env.sh bootstrap   Start, restore worker labels, verify and report GitOps
+  bash scripts/platformlab-env.sh storage status    Check CSI addon and storage ownership
+  bash scripts/platformlab-env.sh storage reconcile Align CSI addon during maintenance
+  bash scripts/platformlab-env.sh doctor      Extended read-only diagnostics (events, allocations)
+  bash scripts/platformlab-env.sh flow        Show ordered daily bootstrap and shutdown flow
+  bash scripts/platformlab-env.sh uis start   Delegate to platformlab-uis.sh start|open|status|stop|logs
+  bash scripts/platformlab-env.sh stop        Snapshot state, stop UI forwards and Minikube (no delete)
 
 Startup gates check readiness in dependency order. On start, storage reconcile
 aligns Minikube CSI addon state after checking PVC ownership. Verify is read-only.
@@ -161,8 +161,8 @@ wait_for_metrics_api() {
 wait_for_gitops() {
   local deadline=$((SECONDS + ARGO_TIMEOUT))
   local statuses found bad
-  local -a expected=(aspecta-root aspecta aspecta-secrets aspecta-metrics-server \
-    aspecta-monitoring aspecta-storage sealed-secrets-controller)
+  local -a expected=(platformlab-root platformlab platformlab-secrets platformlab-metrics-server \
+    platformlab-monitoring platformlab-storage sealed-secrets-controller)
   while :; do
     statuses="$(k -n argocd get applications -o jsonpath='{range .items[*]}{.metadata.name}{"|"}{.status.sync.status}{"|"}{.status.health.status}{"\n"}{end}' 2>/dev/null || true)"
     found=0
@@ -211,16 +211,16 @@ verify_platform() {
   wait_for_rollout argocd deployment/argocd-server
 
   section 'Stage 4/6 | Monitoring and Metrics API'
-  wait_for_rollout monitoring deployment/aspecta-monitoring-kube-pr-operator
-  wait_for_rollout monitoring statefulset/prometheus-aspecta-monitoring-kube-pr-prometheus
-  wait_for_rollout monitoring statefulset/alertmanager-aspecta-monitoring-kube-pr-alertmanager
-  wait_for_rollout kube-system deployment/aspecta-metrics-server
+  wait_for_rollout monitoring deployment/platformlab-monitoring-kube-pr-operator
+  wait_for_rollout monitoring statefulset/prometheus-platformlab-monitoring-kube-pr-prometheus
+  wait_for_rollout monitoring statefulset/alertmanager-platformlab-monitoring-kube-pr-alertmanager
+  wait_for_rollout kube-system deployment/platformlab-metrics-server
   wait_for_metrics_api
   verify_monitoring_volumes
 
   section 'Stage 5/6 | Application workloads'
-  wait_for_rollout aspecta-app deployment/aspecta-backend
-  wait_for_rollout aspecta-app deployment/aspecta-frontend
+  wait_for_rollout platformlab-app deployment/platformlab-backend
+  wait_for_rollout platformlab-app deployment/platformlab-frontend
 
   section 'Stage 6/6 | GitOps reconciliation status'
   wait_for_gitops
@@ -245,7 +245,7 @@ snapshot_pods() {
 
 show_nodes_and_slots() {
   section 'Kubernetes nodes and workload placement'
-  k get nodes -L workload-tier,aspecta.io/pool || return 0
+  k get nodes -L workload-tier,platformlab.io/pool || return 0
 
   local nodes pods node maximum used phase
   nodes="$(k get nodes -o jsonpath='{range .items[*]}{.metadata.name}{"|"}{.status.allocatable.pods}{"\n"}{end}' 2>/dev/null || true)"
@@ -269,7 +269,7 @@ show_docker() {
   fi
   if ! docker_healthy; then
     warn 'Docker daemon unavailable. Start Docker Desktop or Docker Engine and retry.'
-    info 'Then run: bash scripts/aspecta-env.sh start'
+    info 'Then run: bash scripts/platformlab-env.sh start'
     return 1
   fi
   ok 'Docker daemon ready.'
@@ -295,7 +295,7 @@ show_cluster() {
   state="$(minikube_state)"
   printf '%s\n' "$state"
   if [[ "$state" == *'host: Stopped'* ]]; then
-    warn "Profile '$PROFILE' is stopped. Run: bash scripts/aspecta-env.sh start"
+    warn "Profile '$PROFILE' is stopped. Run: bash scripts/platformlab-env.sh start"
     return 1
   fi
   if ! kube_healthy; then
@@ -315,7 +315,7 @@ show_argo() {
   fi
   k -n argocd get applications || true
   local app sync health
-  for app in aspecta-root aspecta aspecta-metrics-server aspecta-monitoring aspecta-storage aspecta-secrets sealed-secrets-controller; do
+  for app in platformlab-root platformlab platformlab-metrics-server platformlab-monitoring platformlab-storage platformlab-secrets sealed-secrets-controller; do
     sync="$(k -n argocd get application "$app" -o jsonpath='{.status.sync.status}' 2>/dev/null || true)"
     health="$(k -n argocd get application "$app" -o jsonpath='{.status.health.status}' 2>/dev/null || true)"
     if [[ -z "$sync" ]]; then
@@ -324,27 +324,27 @@ show_argo() {
       warn "$app: $sync / ${health:-unknown}; review Diff and Sync if needed."
     elif [[ "$health" == Degraded || "$health" == Missing ]]; then
       warn "$app: Synced / $health; check Argo CD details."
-    elif [[ "$health" == Progressing && "$app" == aspecta ]]; then
-      info 'aspecta: Progressing may be caused by Ingress status; check Pods and Services.'
+    elif [[ "$health" == Progressing && "$app" == platformlab ]]; then
+      info 'platformlab: Progressing may be caused by Ingress status; check Pods and Services.'
     fi
   done
-  if ! k -n argocd get application aspecta-root >/dev/null 2>&1; then
+  if ! k -n argocd get application platformlab-root >/dev/null 2>&1; then
     info 'Root bootstrap (only after Argo CD installation):'
-    info "  kubectl --context $CONTEXT apply -f gitops/bootstrap/aspecta-root.yaml"
+    info "  kubectl --context $CONTEXT apply -f gitops/bootstrap/platformlab-root.yaml"
   fi
 }
 
 show_runtime() {
   section 'Application / HPA / placement'
-  k -n aspecta-app get deploy,pods,hpa -o wide 2>/dev/null || warn 'Application resources unavailable.'
+  k -n platformlab-app get deploy,pods,hpa -o wide 2>/dev/null || warn 'Application resources unavailable.'
   section 'Monitoring / PVC / storage'
   k -n monitoring get pods,pvc -o wide 2>/dev/null || warn 'Monitoring resources unavailable.'
   local binding
-  binding="$(k get storageclass aspecta-csi-wffc -o jsonpath='{.volumeBindingMode}' 2>/dev/null || true)"
+  binding="$(k get storageclass platformlab-csi-wffc -o jsonpath='{.volumeBindingMode}' 2>/dev/null || true)"
   if [[ "$binding" == WaitForFirstConsumer ]]; then
-    ok 'StorageClass aspecta-csi-wffc = WaitForFirstConsumer.'
+    ok 'StorageClass platformlab-csi-wffc = WaitForFirstConsumer.'
   else
-    warn "StorageClass aspecta-csi-wffc: ${binding:-missing} (expected WaitForFirstConsumer)."
+    warn "StorageClass platformlab-csi-wffc: ${binding:-missing} (expected WaitForFirstConsumer)."
   fi
 }
 
@@ -355,10 +355,10 @@ show_metrics() {
   if [[ "$api" == True ]]; then
     ok 'Metrics API Available=True'
     k top nodes 2>/dev/null || warn 'Metrics API ready; waiting for samples.'
-    k -n aspecta-app top pods 2>/dev/null || true
+    k -n platformlab-app top pods 2>/dev/null || true
   else
     warn "Metrics API: ${api:-missing}; HPA needs Metrics Server."
-    info 'Argo CD: aspecta-root -> Refresh/Sync -> aspecta-metrics-server.'
+    info 'Argo CD: platformlab-root -> Refresh/Sync -> platformlab-metrics-server.'
   fi
 }
 
@@ -366,10 +366,10 @@ show_local() {
   section 'Local helper and Git'
   if [[ -f "$UI_HELPER" ]]; then
     bash "$UI_HELPER" status || true
-    info 'Web UI: bash scripts/aspecta-env.sh uis start'
-    info 'Open:   bash scripts/aspecta-env.sh uis open'
+    info 'Web UI: bash scripts/platformlab-env.sh uis start'
+    info 'Open:   bash scripts/platformlab-env.sh uis open'
   else
-    info 'UI helper missing: scripts/aspecta-uis.sh'
+    info 'UI helper missing: scripts/platformlab-uis.sh'
   fi
   if has git && git -C "$REPO_ROOT" rev-parse --is-inside-work-tree >/dev/null 2>&1; then
     printf 'Branch: %s\n' "$(git -C "$REPO_ROOT" branch --show-current)"
@@ -382,18 +382,18 @@ show_next() {
   section 'NEXT - daily bootstrap flow'
   printf '%s\n' \
     '1. Start Docker Desktop (Windows/macOS) or Docker Engine (Linux).' \
-    '2. Start (restores labels and checks readiness): bash scripts/aspecta-env.sh start' \
-    '3. Recheck without restarting: bash scripts/aspecta-env.sh verify' \
+    '2. Start (restores labels and checks readiness): bash scripts/platformlab-env.sh start' \
+    '3. Recheck without restarting: bash scripts/platformlab-env.sh verify' \
     '4. If Argo root is OutOfSync: review Diff and Sync (no Force/Prune).' \
     '5. For app OutOfSync: review Argo CD Diff; sync if needed.' \
-    '6. UI: bash scripts/aspecta-env.sh uis start && bash scripts/aspecta-env.sh uis open' \
-    '7. Stop: bash scripts/aspecta-env.sh stop (keeps cluster/PVC).' \
-    '8. Storage ownership: bash scripts/aspecta-env.sh storage status' \
+    '6. UI: bash scripts/platformlab-env.sh uis start && bash scripts/platformlab-env.sh uis open' \
+    '7. Stop: bash scripts/platformlab-env.sh stop (keeps cluster/PVC).' \
+    '8. Storage ownership: bash scripts/platformlab-env.sh storage status' \
     '9. Runbook: docs/OPERATIONS-LIFECYCLE.md'
 }
 
 check() {
-  printf '\nASPECTA | Environment check | %s\n' "$(date '+%Y-%m-%d %H:%M:%S %Z')"
+  printf '\nPLATFORMLAB | Environment check | %s\n' "$(date '+%Y-%m-%d %H:%M:%S %Z')"
   if ! show_docker; then show_next; return 0; fi
   if ! show_cluster; then show_local; show_next; return 0; fi
   show_nodes_and_slots
@@ -405,7 +405,7 @@ check() {
 }
 
 start_cluster() {
-  section 'Start EXISTING Aspecta cluster'
+  section 'Start EXISTING PlatformLab cluster'
   has minikube || { fail 'Minikube not found in PATH'; return 1; }
   has kubectl || { fail 'kubectl not found in PATH'; return 1; }
   docker_healthy || {
@@ -462,7 +462,7 @@ doctor() {
     k describe node "$node" 2>/dev/null | sed -n '/Allocated resources:/,+8p' || true
   done
   section 'Doctor - recent namespace events'
-  for ns in aspecta-app monitoring kube-system argocd; do
+  for ns in platformlab-app monitoring kube-system argocd; do
     printf '\n%s\n' "--- $ns ---"
     k -n "$ns" get events --sort-by=.lastTimestamp 2>/dev/null | tail -n 12 || true
   done
@@ -487,20 +487,20 @@ stop_cluster() {
 flow() {
   cat <<'FLOW'
 
-ASPECTA - Recommended daily operations (Windows Git Bash / Linux / macOS)
+PLATFORMLAB - Recommended daily operations (Windows Git Bash / Linux / macOS)
 
   Start Docker Desktop or Docker Engine (full lab needs more RAM than demo).
-  bash scripts/aspecta-env.sh check
-  bash scripts/aspecta-env.sh start
+  bash scripts/platformlab-env.sh check
+  bash scripts/platformlab-env.sh start
   # The EXISTING cluster starts, restores node labels, then checks readiness.
-  bash scripts/aspecta-env.sh verify
+  bash scripts/platformlab-env.sh verify
   # Existing Kubernetes Pods still restart in parallel at node startup.
   # If Argo CD is OutOfSync, review Diff and the configured sync policy.
-  bash scripts/aspecta-env.sh uis start
-  bash scripts/aspecta-env.sh uis open
-  bash scripts/aspecta-env.sh check
+  bash scripts/platformlab-env.sh uis start
+  bash scripts/platformlab-env.sh uis open
+  bash scripts/platformlab-env.sh check
   # Develop: Git commit/push -> Argo CD reconciliation -> smoke tests.
-  bash scripts/aspecta-env.sh stop
+  bash scripts/platformlab-env.sh stop
 
 SAFETY: no minikube delete; no PVC deletion; no scaling managed resources;
         no automatic Argo prune/force/sync; no secrets printed.
@@ -516,12 +516,12 @@ case "${1:-check}" in
   flow) flow ;;
   uis)
     shift
-    [[ -f "$UI_HELPER" ]] || { fail 'Missing scripts/aspecta-uis.sh'; exit 1; }
+    [[ -f "$UI_HELPER" ]] || { fail 'Missing scripts/platformlab-uis.sh'; exit 1; }
     if (( $# == 0 )); then set -- status; fi
     bash "$UI_HELPER" "$@" ;;
   storage)
     shift
-    [[ -f "$STORAGE_HELPER" ]] || { fail 'Missing scripts/aspecta-storage.sh'; exit 1; }
+    [[ -f "$STORAGE_HELPER" ]] || { fail 'Missing scripts/platformlab-storage.sh'; exit 1; }
     bash "$STORAGE_HELPER" "${1:-status}" --profile "$PROFILE" --context "$CONTEXT" "${@:2}" ;;
   stop) stop_cluster ;;
   -h|--help|help) usage ;;

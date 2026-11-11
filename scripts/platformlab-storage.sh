@@ -6,25 +6,25 @@ set -Eeuo pipefail
 
 ACTION="${1:-status}"
 if (( $# > 0 )); then shift; fi
-PROFILE="${ASPECTA_PROFILE:-aspecta}"
-CONTEXT="${ASPECTA_CONTEXT:-aspecta}"
+PROFILE="${PLATFORMLAB_PROFILE:-platformlab}"
+CONTEXT="${PLATFORMLAB_CONTEXT:-platformlab}"
 STRICT=false
 CSI_DRIVER="hostpath.csi.k8s.io"
-CSI_CLASS="aspecta-csi-wffc"
+CSI_CLASS="platformlab-csi-wffc"
 
 usage() {
   cat <<'HELP'
-Aspecta full-lab storage (Windows Git Bash / Linux / macOS)
+PlatformLab full-lab storage (Windows Git Bash / Linux / macOS)
 
-  bash scripts/aspecta-storage.sh status [--strict]
-  bash scripts/aspecta-storage.sh reconcile
+  bash scripts/platformlab-storage.sh status [--strict]
+  bash scripts/platformlab-storage.sh reconcile
 
-  --profile NAME   Minikube profile (default: aspecta)
-  --context NAME   Kubernetes context (default: aspecta)
+  --profile NAME   Minikube profile (default: platformlab)
+  --context NAME   Kubernetes context (default: platformlab)
 
   status     Read-only: addon states, CSI readiness, StorageClass and PVCs.
   --strict   Also require the GitOps StorageClass to be the sole default.
-  reconcile  Idempotent addon alignment (also called by aspecta-env.sh start):
+  reconcile  Idempotent addon alignment (also called by platformlab-env.sh start):
              enable CSI, disable old addons, demote legacy default classes.
 
 This operates on the FULL three-node lab. The single-node reviewer demo

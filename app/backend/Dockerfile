@@ -1,7 +1,7 @@
 # Minimal Node.js runtime without npm, apk or a shell.
 FROM gcr.io/distroless/nodejs22-debian13:nonroot
 
-LABEL org.opencontainers.image.title="Aspecta Backend"
+LABEL org.opencontainers.image.title="PlatformLab Backend"
 
 ENV NODE_ENV=production \
     PORT=3000

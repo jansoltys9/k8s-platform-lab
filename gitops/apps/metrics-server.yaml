@@ -1,24 +1,24 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: aspecta-metrics-server
+  name: platformlab-metrics-server
   namespace: argocd
   annotations:
     argocd.argoproj.io/sync-wave: "-10"
 spec:
-  project: aspecta-platform
+  project: platformlab-platform
   source:
     repoURL: https://kubernetes-sigs.github.io/metrics-server/
     chart: metrics-server
     targetRevision: 3.14.0
     helm:
-      releaseName: aspecta-metrics-server
+      releaseName: platformlab-metrics-server
       valuesObject:
         replicas: 1
         args:
           - --kubelet-insecure-tls
         nodeSelector:
-          aspecta.io/pool: workers
+          platformlab.io/pool: workers
         resources:
           requests:
             cpu: 50m

@@ -1,15 +1,15 @@
 apiVersion: argoproj.io/v1alpha1
 kind: AppProject
 metadata:
-  name: aspecta-platform
+  name: platformlab-platform
   namespace: argocd
   annotations:
     argocd.argoproj.io/sync-wave: "-20"
 spec:
-  description: Aspecta platform components
+  description: PlatformLab platform components
 
   sourceRepos:
-    - https://github.com/jansoltys9/aspecta-k8s-assignment.git
+    - https://github.com/jansoltys9/k8s-platform-lab.git
     - https://prometheus-community.github.io/helm-charts
     - https://kubernetes-sigs.github.io/metrics-server/
     - https://bitnami.github.io/sealed-secrets

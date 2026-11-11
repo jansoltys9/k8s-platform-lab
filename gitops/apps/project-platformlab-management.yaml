@@ -1,15 +1,15 @@
 apiVersion: argoproj.io/v1alpha1
 kind: AppProject
 metadata:
-  name: aspecta-management
+  name: platformlab-management
   namespace: argocd
   annotations:
     argocd.argoproj.io/sync-wave: "-30"
 spec:
-  description: Aspecta App-of-Apps management
+  description: PlatformLab App-of-Apps management
 
   sourceRepos:
-    - https://github.com/jansoltys9/aspecta-k8s-assignment.git
+    - https://github.com/jansoltys9/k8s-platform-lab.git
 
   destinations:
     - server: https://kubernetes.default.svc

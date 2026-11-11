@@ -1,6 +1,0 @@
-apiVersion: v2
-name: aspecta
-description: Aspecta cloud-native frontend and backend
-type: application
-version: 0.1.1
-appVersion: "0.1.0"

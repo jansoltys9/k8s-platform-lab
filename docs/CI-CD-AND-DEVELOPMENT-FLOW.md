@@ -29,7 +29,7 @@ Both services have independent versions and share one Helm chart. GitHub Actions
 # Check desired state and actual deployed images after a release:
 git pull --ff-only origin main
 kubectl -n argocd get applications
-kubectl -n aspecta-app get deployment aspecta-backend aspecta-frontend \
+kubectl -n platformlab-app get deployment platformlab-backend platformlab-frontend \
   -o custom-columns=NAME:.metadata.name,IMAGE:.spec.template.spec.containers[0].image
 ```
 

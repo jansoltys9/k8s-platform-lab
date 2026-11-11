@@ -23,7 +23,7 @@ helm repo update
 # Update targetRevision in gitops/apps/monitoring.yaml.
 # Adjust platform/monitoring/values-minikube.yaml only if needed.
 MONITORING_CHART_VERSION="$(awk '/targetRevision:/{print $2; exit}' gitops/apps/monitoring.yaml)"
-helm template aspecta-monitoring prometheus-community/kube-prometheus-stack \
+helm template platformlab-monitoring prometheus-community/kube-prometheus-stack \
   --version "$MONITORING_CHART_VERSION" -n monitoring \
   -f platform/monitoring/values-minikube.yaml >/tmp/monitoring.yaml
 git diff --check
@@ -32,12 +32,12 @@ git commit -m "chore(platform): upgrade monitoring chart"
 git push -u origin platform/monitoring-upgrade
 ```
 
-PR → review chart/CRD changes → merge. This **platform-only PR does not run the app GitHub Actions workflow**. Because `aspecta-root` does not auto-sync its child definitions, open the Argo CD UI and **Sync `aspecta-root`**. The `aspecta-monitoring` child can then apply the new chart.
+PR → review chart/CRD changes → merge. This **platform-only PR does not run the app GitHub Actions workflow**. Because `platformlab-root` does not auto-sync its child definitions, open the Argo CD UI and **Sync `platformlab-root`**. The `platformlab-monitoring` child can then apply the new chart.
 
 ```bash
-kubectl -n argocd get applications aspecta-root aspecta-monitoring
+kubectl -n argocd get applications platformlab-root platformlab-monitoring
 kubectl -n monitoring get pods,pvc
-kubectl -n monitoring get pod alertmanager-aspecta-monitoring-kube-pr-alertmanager-0 \
+kubectl -n monitoring get pod alertmanager-platformlab-monitoring-kube-pr-alertmanager-0 \
   -o jsonpath='{.spec.containers[*].image}{"\n"}'
 ```
 
@@ -64,11 +64,11 @@ PR → review → merge. **Important:** Argo CD is installed via direct Helm; a 
 git switch main && git pull --ff-only origin main
 helm repo add argo https://argoproj.github.io/argo-helm --force-update
 helm repo update
-helm history argocd -n argocd --kube-context aspecta
+helm history argocd -n argocd --kube-context platformlab
 helm template argocd argo/argo-cd -n argocd \
   --version "$(cat platform/argocd/CHART_VERSION)" \
   -f platform/argocd/values-minikube.yaml >/tmp/argocd.yaml
-helm upgrade argocd argo/argo-cd -n argocd --kube-context aspecta \
+helm upgrade argocd argo/argo-cd -n argocd --kube-context platformlab \
   --version "$(cat platform/argocd/CHART_VERSION)" \
   -f platform/argocd/values-minikube.yaml --wait
 kubectl -n argocd get pods,applications
@@ -78,17 +78,17 @@ kubectl -n argocd get pods,applications
 
 ## D3 – Upgrade Traefik (direct Helm)
 
-Branch `platform/traefik-upgrade`; change `platform/traefik/CHART_VERSION` and any necessary values. **Also update `TRAEFIK_CHART_VERSION` in `scripts/aspecta-bootstrap.sh`** so reviewer installations use the same version. PR → merge → planned Helm upgrade:
+Branch `platform/traefik-upgrade`; change `platform/traefik/CHART_VERSION` and any necessary values. **Also update `TRAEFIK_CHART_VERSION` in `scripts/platformlab-bootstrap.sh`** so reviewer installations use the same version. PR → merge → planned Helm upgrade:
 
 ```bash
 git switch main && git pull --ff-only origin main
 helm repo add traefik https://traefik.github.io/charts --force-update
 helm repo update
-helm history traefik -n traefik --kube-context aspecta
+helm history traefik -n traefik --kube-context platformlab
 helm template traefik traefik/traefik -n traefik \
   --version "$(cat platform/traefik/CHART_VERSION)" \
   -f platform/traefik/values-minikube.yaml >/tmp/traefik.yaml
-helm upgrade traefik traefik/traefik -n traefik --kube-context aspecta \
+helm upgrade traefik traefik/traefik -n traefik --kube-context platformlab \
   --version "$(cat platform/traefik/CHART_VERSION)" \
   -f platform/traefik/values-minikube.yaml --wait
 kubectl -n traefik get pods

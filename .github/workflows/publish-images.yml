@@ -1,4 +1,4 @@
-name: Aspecta - CI, Security, GHCR and GitOps
+name: PlatformLab - CI, Security, GHCR and GitOps
 
 on:
   pull_request:
@@ -23,7 +23,7 @@ on:
 permissions:
   contents: read
 concurrency:
-  group: ${{ startsWith(github.ref, 'refs/tags/') && 'aspecta-releases' || format('aspecta-ci-{0}', github.ref) }}
+  group: ${{ startsWith(github.ref, 'refs/tags/') && 'platformlab-releases' || format('platformlab-ci-{0}', github.ref) }}
   cancel-in-progress: ${{ !startsWith(github.ref, 'refs/tags/') }}
 
 jobs:
@@ -80,10 +80,10 @@ jobs:
           version: v3.21.2
       - name: Lint, render and package chart
         run: |
-          helm lint ./helm/aspecta
-          helm template aspecta ./helm/aspecta \
-            --namespace aspecta-app > /tmp/aspecta.yaml
-          helm package ./helm/aspecta --destination /tmp
+          helm lint ./helm/platformlab
+          helm template platformlab ./helm/platformlab \
+            --namespace platformlab-app > /tmp/platformlab.yaml
+          helm package ./helm/platformlab --destination /tmp
 
   release-meta:
     name: Validate component release tag
@@ -147,12 +147,12 @@ jobs:
           context: ${{ matrix.context }}
           load: true
           push: false
-          tags: aspecta-${{ matrix.component }}:ci
+          tags: platformlab-${{ matrix.component }}:ci
       - name: Block on fixable HIGH or CRITICAL vulnerabilities
         uses: aquasecurity/trivy-action@v0.36.0
         with:
           scan-type: image
-          image-ref: aspecta-${{ matrix.component }}:ci
+          image-ref: platformlab-${{ matrix.component }}:ci
           format: table
           scanners: vuln
           vuln-type: os,library
@@ -190,8 +190,8 @@ jobs:
           sbom: true
           provenance: mode=min
           tags: |
-            ghcr.io/${{ github.repository_owner }}/aspecta-${{ needs.release-meta.outputs.component }}:${{ needs.release-meta.outputs.image_tag }}
-            ghcr.io/${{ github.repository_owner }}/aspecta-${{ needs.release-meta.outputs.component }}:sha-${{ github.sha }}
+            ghcr.io/${{ github.repository_owner }}/platformlab-${{ needs.release-meta.outputs.component }}:${{ needs.release-meta.outputs.image_tag }}
+            ghcr.io/${{ github.repository_owner }}/platformlab-${{ needs.release-meta.outputs.component }}:sha-${{ github.sha }}
           labels: |
             org.opencontainers.image.source=https://github.com/${{ github.repository }}
             org.opencontainers.image.revision=${{ github.sha }}
@@ -225,8 +225,8 @@ jobs:
             --owner "$IMAGE_OWNER" \
             --component "$RELEASE_COMPONENT" \
             --tag "$RELEASE_IMAGE_TAG"
-          helm template aspecta ./helm/aspecta \
-            --namespace aspecta-app > /tmp/aspecta.yaml
+          helm template platformlab ./helm/platformlab \
+            --namespace platformlab-app > /tmp/platformlab.yaml
       - name: Commit image selection to GitOps
         env:
           RELEASE_COMPONENT: ${{ needs.release-meta.outputs.component }}
@@ -234,7 +234,7 @@ jobs:
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add helm/aspecta/values.yaml
+          git add helm/platformlab/values.yaml
           if ! git diff --cached --quiet; then
             git commit -m "chore(gitops): deploy $RELEASE_COMPONENT $RELEASE_IMAGE_TAG [skip ci]"
             git push origin HEAD:main

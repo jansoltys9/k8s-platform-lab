@@ -16,6 +16,6 @@ Use a feature/fix branch, open a PR to `main`, and wait for CI checks. **Merging
 - Backend example: `fix/backend-response` → `backend-v0.1.1`
 - Frontend example: `feat/frontend-message` → `frontend-v0.1.1`
 
-The release workflow updates only that service's image tag in `helm/aspecta/values.yaml`; Argo CD deploys it. Do not edit image tags by hand as part of a normal application release.
+The release workflow updates only that service's image tag in `helm/platformlab/values.yaml`; Argo CD deploys it. Do not edit image tags by hand as part of a normal application release.
 
 For the exact commands and version rules, see [A – Application changes](../docs/operations/A-APPLICATION.md). For the overall flow, see [CI/CD and development](../docs/CI-CD-AND-DEVELOPMENT-FLOW.md).
