@@ -108,7 +108,7 @@ jobs:
             exit 1
           fi
           component="${BASH_REMATCH[1]}"
-          image_tag="${RELEASE_TAG#${component}-}"
+          image_tag="${RELEASE_TAG#"$component"-}"
           git fetch origin main
           if ! git merge-base --is-ancestor "$GITHUB_SHA" origin/main; then
             echo "Release commit must already be merged into main" >&2
