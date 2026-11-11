@@ -3,7 +3,7 @@ const os = require("node:os");
 const crypto = require("node:crypto");
 
 const PORT = Number(process.env.PORT || 3000);
-const MESSAGE = process.env.APP_MESSAGE || "Hello from Aspecta Kubernetes!";
+const MESSAGE = process.env.APP_MESSAGE || "Hello from Kubernetes Platform!";
 const ENVIRONMENT = process.env.APP_ENV || "local";
 const INTERNAL_API_TOKEN = process.env.INTERNAL_API_TOKEN;
 
@@ -57,7 +57,7 @@ const server = http.createServer((req, res) => {
 
     return res.end(JSON.stringify({
       status: "ok",
-      service: "aspecta-backend"
+      service: "platformlab-backend"
     }));
   }
 
@@ -68,7 +68,7 @@ const server = http.createServer((req, res) => {
 
     return res.end(JSON.stringify({
       message: MESSAGE,
-      service: "aspecta-backend",
+      service: "platformlab-backend",
       environment: ENVIRONMENT,
       hostname: os.hostname(),
       timestamp: new Date().toISOString()
@@ -81,12 +81,12 @@ const server = http.createServer((req, res) => {
     });
 
     return res.end([
-      "# HELP aspecta_api_requests_total Total API requests",
-      "# TYPE aspecta_api_requests_total counter",
-      `aspecta_api_requests_total ${apiRequests}`,
-      "# HELP aspecta_uptime_seconds Process uptime in seconds",
-      "# TYPE aspecta_uptime_seconds gauge",
-      `aspecta_uptime_seconds ${process.uptime()}`,
+      "# HELP platformlab_api_requests_total Total API requests",
+      "# TYPE platformlab_api_requests_total counter",
+      `platformlab_api_requests_total ${apiRequests}`,
+      "# HELP platformlab_uptime_seconds Process uptime in seconds",
+      "# TYPE platformlab_uptime_seconds gauge",
+      `platformlab_uptime_seconds ${process.uptime()}`,
       ""
     ].join("\n"));
   }
@@ -96,7 +96,7 @@ const server = http.createServer((req, res) => {
 });
 
 server.listen(PORT, "0.0.0.0", () => {
-  console.log(`Aspecta backend listening on port ${PORT}`);
+  console.log(`PlatformLab backend listening on port ${PORT}`);
 });
 
 process.on("SIGTERM", () => {

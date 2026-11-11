@@ -2,7 +2,7 @@
 
 **Use this for:** `app/backend/**`, `app/frontend/**`, or either Dockerfile.
 
-**Result:** a *new version of one service*. The Git tag starts GitHub Actions; it builds/scans, publishes to GHCR and updates `helm/aspecta/values.yaml`. Argo CD deploys the new image.
+**Result:** a *new version of one service*. The Git tag starts GitHub Actions; it builds/scans, publishes to GHCR and updates `helm/platformlab/values.yaml`. Argo CD deploys the new image.
 
 ## Example A1: fix the backend (`v0.1.0` → `v0.1.1`)
 
@@ -14,7 +14,7 @@ git pull --ff-only origin main
 git switch -c fix/backend-response
 # Edit app/backend/server.js in VS Code.
 node --check app/backend/server.js
-docker build -t aspecta-backend:local ./app/backend
+docker build -t platformlab-backend:local ./app/backend
 git add app/backend/
 git commit -m "fix(backend): correct API response"
 git push -u origin fix/backend-response
@@ -57,9 +57,9 @@ git push origin backend-v0.1.1
 gh run list --workflow publish-images.yml --limit 5
 # Wait for "Publish release to GHCR" and "Promote ... to GitOps" to succeed.
 git pull --ff-only origin main
-kubectl -n argocd get application aspecta
-kubectl -n aspecta-app rollout status deploy/aspecta-backend --timeout=180s
-kubectl -n aspecta-app get deploy aspecta-backend aspecta-frontend \
+kubectl -n argocd get application platformlab
+kubectl -n platformlab-app rollout status deploy/platformlab-backend --timeout=180s
+kubectl -n platformlab-app get deploy platformlab-backend platformlab-frontend \
   -o custom-columns=NAME:.metadata.name,IMAGE:.spec.template.spec.containers[0].image
 ```
 
@@ -71,10 +71,10 @@ Same steps, but use `fix/frontend-header` (or `feat/frontend-search`), edit `app
 
 ```bash
 (cd app/frontend && npm ci && npm run build)
-docker build -t aspecta-frontend:local ./app/frontend
+docker build -t platformlab-frontend:local ./app/frontend
 ```
 
-After PR merge, pick the **frontend** merge commit (`git log -5 --oneline -- app/frontend`) and create `frontend-vX.Y.Z` on that commit. Verify `deployment/aspecta-frontend` and make sure backend did not change.
+After PR merge, pick the **frontend** merge commit (`git log -5 --oneline -- app/frontend`) and create `frontend-vX.Y.Z` on that commit. Verify `deployment/platformlab-frontend` and make sure backend did not change.
 
 ## Example A3: base image security update
 

@@ -1,14 +1,14 @@
 apiVersion: v1
 kind: Pod
 metadata:
-  name: aspecta-netpol-deny-test
+  name: platformlab-netpol-deny-test
   namespace: default
 spec:
   restartPolicy: Never
   automountServiceAccountToken: false
 
   nodeSelector:
-    kubernetes.io/hostname: aspecta
+    kubernetes.io/hostname: platformlab
 
   containers:
     - name: network-test
@@ -19,7 +19,7 @@ spec:
         - |
           set -eu
 
-          HOST="aspecta-backend.aspecta-app.svc.cluster.local"
+          HOST="platformlab-backend.platformlab-app.svc.cluster.local"
 
           echo "=== TEST 1: Kubernetes DNS ==="
           nslookup "$HOST"

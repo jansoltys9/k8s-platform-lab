@@ -1,23 +1,23 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: aspecta-monitoring
+  name: platformlab-monitoring
   namespace: argocd
   annotations:
     argocd.argoproj.io/sync-wave: "20"
 spec:
-  project: aspecta-platform
+  project: platformlab-platform
 
   sources:
     - repoURL: https://prometheus-community.github.io/helm-charts
       chart: kube-prometheus-stack
       targetRevision: 92.2.0
       helm:
-        releaseName: aspecta-monitoring
+        releaseName: platformlab-monitoring
         valueFiles:
           - $values/platform/monitoring/values-minikube.yaml
 
-    - repoURL: https://github.com/jansoltys9/aspecta-k8s-assignment.git
+    - repoURL: https://github.com/jansoltys9/k8s-platform-lab.git
       targetRevision: main
       ref: values
 

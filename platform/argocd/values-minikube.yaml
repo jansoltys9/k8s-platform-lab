@@ -1,4 +1,4 @@
-# Aspecta - resource-aware Argo CD installation
+# PlatformLab - resource-aware Argo CD installation
 
 dex:
   enabled: false

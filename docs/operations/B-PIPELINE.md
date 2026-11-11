@@ -28,7 +28,7 @@ python .github/scripts/promote-images.py --owner jansoltys9 \
   --component backend --tag v0.1.1 --dry-run
 python .github/scripts/promote-images.py --owner jansoltys9 \
   --component frontend --tag v0.1.1 --dry-run
-helm lint ./helm/aspecta
+helm lint ./helm/platformlab
 ```
 
 Do not release a fake version just to test a pipeline-only edit. For **docs-only** changes the app CI won't run: see [Operations](../OPERATIONS.md). If a PR job fails, fix and push the same branch.

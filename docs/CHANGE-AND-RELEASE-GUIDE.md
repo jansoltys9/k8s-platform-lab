@@ -14,7 +14,7 @@
 | Tune Argo CD values | `platform/argocd-resources` | No chart bump for values-only change; manual Helm apply |
 | Improve docs | `docs/reviewer-clarity` | No version |
 
-**Three separate versions:** app Git tags `backend-vX.Y.Z` / `frontend-vX.Y.Z` (published images `vX.Y.Z`); our chart version in `helm/aspecta/Chart.yaml`; and third-party chart versions in GitOps or `platform/*/CHART_VERSION`.
+**Three separate versions:** app Git tags `backend-vX.Y.Z` / `frontend-vX.Y.Z` (published images `vX.Y.Z`); our chart version in `helm/platformlab/Chart.yaml`; and third-party chart versions in GitOps or `platform/*/CHART_VERSION`.
 
 PATCH = fix or secure rebuild; MINOR = compatible feature; MAJOR = breaking change. During `0.x`, document breaking changes clearly. The Helm `appVersion` is informational; it cannot describe two independently versioned services.
 

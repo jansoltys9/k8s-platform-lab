@@ -1,14 +1,14 @@
 apiVersion: v1
 kind: Pod
 metadata:
-  name: aspecta-netpol-same-ns-test
-  namespace: aspecta-app
+  name: platformlab-netpol-same-ns-test
+  namespace: platformlab-app
 spec:
   restartPolicy: Never
   automountServiceAccountToken: false
 
   nodeSelector:
-    kubernetes.io/hostname: aspecta-m02
+    kubernetes.io/hostname: platformlab-m02
 
   containers:
     - name: network-test
@@ -18,8 +18,8 @@ spec:
         - |
           set -eu
 
-          BACKEND="aspecta-backend.aspecta-app.svc.cluster.local"
-          FRONTEND="aspecta-frontend.aspecta-app.svc.cluster.local"
+          BACKEND="platformlab-backend.platformlab-app.svc.cluster.local"
+          FRONTEND="platformlab-frontend.platformlab-app.svc.cluster.local"
 
           echo "=== DNS ==="
           nslookup "$BACKEND"

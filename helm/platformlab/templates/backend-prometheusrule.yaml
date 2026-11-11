@@ -4,25 +4,25 @@ kind: PrometheusRule
 metadata:
   name: {{ .Release.Name }}-backend
   labels:
-    release: aspecta-monitoring
+    release: platformlab-monitoring
 spec:
   groups:
-    - name: aspecta.backend.availability
+    - name: platformlab.backend.availability
       rules:
-        - alert: AspectaBackendScrapeDown
+        - alert: PlatformLabBackendScrapeDown
           expr: 'up{namespace="{{ .Release.Namespace }}",service="{{ .Release.Name }}-backend"} == 0'
           for: 1m
           labels:
             severity: critical
           annotations:
-            summary: "Aspecta backend metrics scrape failed"
+            summary: "PlatformLab backend metrics scrape failed"
             description: "Prometheus cannot scrape the backend Service for at least one minute."
-        - alert: AspectaBackendTargetMissing
+        - alert: PlatformLabBackendTargetMissing
           expr: 'absent(up{namespace="{{ .Release.Namespace }}",service="{{ .Release.Name }}-backend"})'
           for: 1m
           labels:
             severity: warning
           annotations:
-            summary: "Aspecta backend Prometheus target missing"
+            summary: "PlatformLab backend Prometheus target missing"
             description: "No backend scrape target has been discovered for at least one minute."
 {{- end }}

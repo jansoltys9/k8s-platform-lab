@@ -1,4 +1,4 @@
-# Aspecta Kubernetes Assignment
+# Kubernetes Platform Lab
 
 A small frontend/backend application on Kubernetes, built to demonstrate secure deployments, CI/CD, GitOps, autoscaling and monitoring.
 
@@ -29,26 +29,26 @@ The application has **Deployments, ClusterIP Services, Ingress, ConfigMap, Secre
 **Requirements:** Docker Desktop (Linux containers), Git/Git Bash, Minikube, kubectl, Helm, OpenSSL, internet access and at least **4 GiB available to Docker**.
 
 ```bash
-git clone https://github.com/jansoltys9/aspecta-k8s-assignment.git
-cd aspecta-k8s-assignment
-bash scripts/aspecta-bootstrap.sh --mode demo --phase infra
-bash scripts/aspecta-bootstrap.sh --mode demo --phase app
+git clone https://github.com/jansoltys9/k8s-platform-lab.git
+cd k8s-platform-lab
+bash scripts/platformlab-bootstrap.sh --mode demo --phase infra
+bash scripts/platformlab-bootstrap.sh --mode demo --phase app
 ```
 
 In **another terminal**:
 
 ```bash
-kubectl --context aspecta-review -n traefik port-forward svc/traefik 18082:80
+kubectl --context platformlab-review -n traefik port-forward svc/traefik 18082:80
 ```
 
 Open <http://127.0.0.1:18082/> and select **Call Backend API**, or run:
 
 ```bash
 curl -f http://127.0.0.1:18082/api/hello
-kubectl --context aspecta-review -n aspecta-app get deploy,pods,hpa
+kubectl --context platformlab-review -n platformlab-app get deploy,pods,hpa
 ```
 
-Stop without deleting the demo: `minikube stop -p aspecta-review`.
+Stop without deleting the demo: `minikube stop -p platformlab-review`.
 
 **Demo versus full lab:** the one-node demo intentionally skips Argo CD and Prometheus; it uses public GHCR images and generates its own local Secret. The separately demonstrated **full lab** includes GitOps and Prometheus/Alertmanager. Its setup is guided rather than a single unattended command; it requires more resources and a newly sealed Secret. See [first-time setup](docs/BOOTSTRAP-MODES.md) and [full-lab Secrets](docs/FULL-LAB-SECRETS.md).
 
@@ -65,7 +65,7 @@ Stop without deleting the demo: `minikube stop -p aspecta-review`.
 
 ## Delivery and verification
 
-Application/Helm/CI pull requests run validation and, when applicable, Trivy scans. Docs-only changes do not trigger this workflow. Independent Git tags such as `backend-v0.1.0` and `frontend-v0.1.0` publish images to GHCR, update `helm/aspecta/values.yaml`, and allow Argo CD to roll out the selected service. Both `v0.1.0` images were verified running with Argo CD `Synced / Healthy` on 13 October 2026.
+Application/Helm/CI pull requests run validation and, when applicable, Trivy scans. Docs-only changes do not trigger this workflow. Independent Git tags such as `backend-v0.1.0` and `frontend-v0.1.0` publish images to GHCR, update `helm/platformlab/values.yaml`, and allow Argo CD to roll out the selected service. Both `v0.1.0` images were verified running with Argo CD `Synced / Healthy` on 13 October 2026.
 
 The CI workflow renders **and packages** the Helm chart during validation; the app chart is kept in Git rather than published to a chart registry. See [CI/CD flow](docs/CI-CD-AND-DEVELOPMENT-FLOW.md) for the details.
 

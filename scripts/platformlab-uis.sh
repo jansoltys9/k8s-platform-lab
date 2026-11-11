@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
-# Local UI access for the Aspecta Minikube lab (Windows Git Bash / Linux / macOS).
-# Usage: bash scripts/aspecta-uis.sh start|status|open|stop|logs
+# Local UI access for the PlatformLab Minikube lab (Windows Git Bash / Linux / macOS).
+# Usage: bash scripts/platformlab-uis.sh start|status|open|stop|logs
 set -Eeuo pipefail
 
-CONTEXT="${ASPECTA_CONTEXT:-aspecta}"
+CONTEXT="${PLATFORMLAB_CONTEXT:-platformlab}"
 umask 077
-STATE_DIR="${HOME:-${TMPDIR:-/tmp}}/.cache/aspecta-ui-forwards"
+STATE_DIR="${HOME:-${TMPDIR:-/tmp}}/.cache/platformlab-ui-forwards"
 mkdir -p "$STATE_DIR"
 
 names=(app argocd prometheus alertmanager)
@@ -76,8 +76,8 @@ start_all() {
   local errors=0
   start_one app traefik traefik 80 18080 || errors=1
   start_one argocd argocd argocd-server 443 18081 || errors=1
-  start_one prometheus monitoring aspecta-monitoring-kube-pr-prometheus 9090 18090 || errors=1
-  start_one alertmanager monitoring aspecta-monitoring-kube-pr-alertmanager 9093 18093 || errors=1
+  start_one prometheus monitoring platformlab-monitoring-kube-pr-prometheus 9090 18090 || errors=1
+  start_one alertmanager monitoring platformlab-monitoring-kube-pr-alertmanager 9093 18093 || errors=1
   return "$errors"
 }
 
@@ -148,8 +148,8 @@ case "${1:-}" in
   open)   open_all ;;
   logs)   for name in "${names[@]}"; do printf '\n--- %s ---\n' "$name"; tail -n 8 "$STATE_DIR/$name.log" 2>/dev/null || true; done ;;
   -h|--help|help)
-         printf '%s\n' 'Aspecta - local UI access (Windows Git Bash / Linux / macOS)' \
-           'Usage: bash scripts/aspecta-uis.sh start|status|open|stop|logs' \
+         printf '%s\n' 'PlatformLab - local UI access (Windows Git Bash / Linux / macOS)' \
+           'Usage: bash scripts/platformlab-uis.sh start|status|open|stop|logs' \
            'Browser opening uses explorer.exe, xdg-open or open when available.' ;;
-  *)     echo 'Usage: bash scripts/aspecta-uis.sh start|status|open|stop|logs' >&2; exit 2 ;;
+  *)     echo 'Usage: bash scripts/platformlab-uis.sh start|status|open|stop|logs' >&2; exit 2 ;;
 esac

@@ -1,14 +1,14 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: aspecta-storage
+  name: platformlab-storage
   namespace: argocd
   annotations:
     argocd.argoproj.io/sync-wave: "-20"
 spec:
-  project: aspecta-platform
+  project: platformlab-platform
   source:
-    repoURL: https://github.com/jansoltys9/aspecta-k8s-assignment.git
+    repoURL: https://github.com/jansoltys9/k8s-platform-lab.git
     targetRevision: main
     path: platform/storage
   destination:

@@ -17,12 +17,12 @@ Start in the repository root on an up-to-date `main`. Choose **one** guide; each
 | `README.md`, `docs/**` only | **No** (normal PR/push) | None |
 | `app/**` | Yes | New app release requires a SemVer Git tag |
 | `.github/workflows/publish-images.yml`, `.github/scripts/**`* | Yes for configured paths | No new app image without a release tag |
-| `helm/aspecta/**` | Yes | App Argo CD auto-syncs tracked `main` changes |
+| `helm/platformlab/**` | Yes | App Argo CD auto-syncs tracked `main` changes |
 | `gitops/apps/**` | **No** | Root Argo CD Application needs **manual Sync**; child may then auto-sync |
 | `platform/monitoring/values-minikube.yaml` | **No** | Monitoring child Application can auto-sync values changes |
 | `platform/argocd/**`, `platform/traefik/**` | **No** | **Manual Helm upgrade** after merge, for installed releases |
 
-*For `.github/scripts`, only `promote-images.py` is included in the current CI trigger paths. `workflow_dispatch` always lets you run the workflow deliberately. This table describes the current [application workflow](https://github.com/jansoltys9/aspecta-k8s-assignment/blob/main/.github/workflows/publish-images.yml), not every possible GitHub workflow.
+*For `.github/scripts`, only `promote-images.py` is included in the current CI trigger paths. `workflow_dispatch` always lets you run the workflow deliberately. This table describes the current [application workflow](https://github.com/jansoltys9/k8s-platform-lab/blob/main/.github/workflows/publish-images.yml), not every possible GitHub workflow.
 
 ## Example: documentation only
 

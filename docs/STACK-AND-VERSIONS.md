@@ -6,19 +6,19 @@
 |---|---|---|
 | Kubernetes | v1.35.1 | Minikube |
 | Backend / frontend | `v0.1.0` / `v0.1.0` | Independent app release tags |
-| Aspecta Helm chart | `0.1.1` | `helm/aspecta/Chart.yaml` |
+| PlatformLab Helm chart | `0.1.1` | `helm/platformlab/Chart.yaml` |
 | Argo CD / Traefik | chart `10.10.1` / `41.6.1` | Direct Helm upgrade |
 | Monitoring (includes Alertmanager) | kube-prometheus-stack chart `92.2.0` | Argo CD monitoring Application |
 | Metrics Server / Sealed Secrets | chart `3.14.0` / `2.20.0` | Argo CD child Applications |
-| Storage | Minikube CSI HostPath + `aspecta-csi-wffc` | Minikube addon and GitOps |
+| Storage | Minikube CSI HostPath + `platformlab-csi-wffc` | Minikube addon and GitOps |
 
 **Check versions in your own lab:**
 
 ```bash
 kubectl get nodes
-kubectl -n aspecta-app get deployments \
+kubectl -n platformlab-app get deployments \
   -o custom-columns=NAME:.metadata.name,IMAGE:.spec.template.spec.containers[0].image
-cat helm/aspecta/Chart.yaml
+cat helm/platformlab/Chart.yaml
 cat platform/argocd/CHART_VERSION platform/traefik/CHART_VERSION
 helm list -A
 kubectl -n argocd get applications

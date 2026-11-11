@@ -1,21 +1,21 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: aspecta
+  name: platformlab
   namespace: argocd
 spec:
-  project: aspecta-workloads
+  project: platformlab-workloads
 
   source:
-    repoURL: https://github.com/jansoltys9/aspecta-k8s-assignment.git
+    repoURL: https://github.com/jansoltys9/k8s-platform-lab.git
     targetRevision: main
-    path: helm/aspecta
+    path: helm/platformlab
     helm:
-      releaseName: aspecta
+      releaseName: platformlab
 
   destination:
     server: https://kubernetes.default.svc
-    namespace: aspecta-app
+    namespace: platformlab-app
 
   ignoreDifferences:
       - group: apps
