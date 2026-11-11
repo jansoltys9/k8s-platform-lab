@@ -17,7 +17,7 @@ backend:
     targetCPUUtilizationPercentage: 70
   image:
     repository: ghcr.io/jansoltys9/platformlab-backend
-    tag: v0.1.0
+    tag: v0.2.0
     pullPolicy: IfNotPresent
   resources:
     requests:
