@@ -1,5 +1,5 @@
 # Stage 1: Build frontend assets (not part of final runtime image)
-FROM node:22-alpine AS build
+FROM node:26-alpine AS build
 
 WORKDIR /src
 COPY package.json package-lock.json ./
